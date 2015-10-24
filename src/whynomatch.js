@@ -1,6 +1,6 @@
 import _ from "lodash"
 
-let operators = {
+let comparisionOperators = {
   $eq(target, value){
     return target === value;
   },
@@ -27,38 +27,69 @@ let operators = {
     }
   },
   $nin(target, value){
-    return !operators["$in"](target, value);
+    return !comparisionOperators["$in"](target, value);
   }
 }
 
+let virtualOperators = {
+  $simpleEq(target, value, key){
+    if(target[key] !== value)
+      return value;
+  },
+  $nested(target, value, key){
+    return whynomatch(target[key], value);
+  }
+}
+
+let operators = _.extend(
+  virtualOperators, 
+  wrapComperisionOperators(comparisionOperators));
+
 function whynomatch(target, query){
-  let results = [];
   
+  let noMatch = {};
+
   _.keys(query).forEach(function(key){
     let value = query[key];
 
-    if(_.isObject(value) && !_.isArray(value)){
-      let fieldResults = whynomatch(target[key], query[key]);
-      _.each(fieldResults, _.partial(addToResults, results, key));
-    } else {
-      if(key in operators){
-        if(!operators[key](target, value)){
-          addToResults(results, key, value);
-        }
-      } else if(target[key] != value){
-        addToResults(results, key, value);
-      }
+    let operator = getOperator(key, value);
+    let operatorResults = operator(target, value, key);
+
+    if(!isEmpty(operatorResults))
+      noMatch[key] = operatorResults;
+  });
+  
+  return noMatch;
+}
+
+function wrapComperisionOperators(operators){
+  return _.transform(operators, function(result, operatorFn, operatorName){
+    let wrapedOperator = function(target, value, key){
+      if(!operatorFn(target, value, key))
+        return value;
+
+      return {};
     }
-  })
 
-  return results;
+    result[operatorName] = wrapedOperator;
+  });
 }
 
-function addToResults(results, key, value){
-  results.push(createResult(key, value));
+function getOperator(key, value){
+  let operatorName;
+
+  if(key in operators)
+    operatorName = key
+  else if (!_.isObject(value))
+    operatorName = "$simpleEq";
+  else
+    operatorName = "$nested";  
+
+  return operators[operatorName];
 }
 
-function createResult(key, value){
-  return { [key]: value };
+function isEmpty(value){
+  return value == undefined || _.isEqual(value, {});
 }
+
 module.exports = whynomatch

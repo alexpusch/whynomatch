@@ -11,7 +11,7 @@ describe('whynomatch', function () {
     let expected = { a: 1 }
 
     let result = whynomatch(target, query);
-    expect(expected).to.deep.equal(result);
+    expect(result).to.deep.equal(expected);
   });
 
   it('works for a multi property, single query field', function () {
@@ -21,7 +21,7 @@ describe('whynomatch', function () {
     let expected = { a: 1 }
 
     let result = whynomatch(target, query);
-    expect(expected).to.deep.equal(result);
+    expect(result).to.deep.equal(expected);
   });
 
   it('works for a multi property, multi query field', function () {
@@ -30,7 +30,7 @@ describe('whynomatch', function () {
     let expected = { a: 1 }
 
     let result = whynomatch(target, query);
-    expect(expected).to.deep.equal(result);
+    expect(result).to.deep.equal(expected);
   });
 
   it('works when query queiries non existing fields', function () {
@@ -40,7 +40,7 @@ describe('whynomatch', function () {
     let expected = { a: 1, c: 2 }
 
     let result = whynomatch(target, query);
-    expect(expected).to.deep.equal(result);
+    expect(result).to.deep.equal(expected);
   });
 
   it('works for a nested property', function () {
@@ -50,7 +50,7 @@ describe('whynomatch', function () {
     let expected = { a: { c: 4 } }
 
     let result = whynomatch(target, query);
-    expect(expected).to.deep.equal(result);
+    expect(result).to.deep.equal(expected);
   });
 
   describe('$eq operator', function () {
@@ -61,7 +61,7 @@ describe('whynomatch', function () {
       let expected = { a: { $eq: 2 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the target does not equals the query', function () {
@@ -71,7 +71,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -83,7 +83,7 @@ describe('whynomatch', function () {
       let expected = { a: { $ne: 1 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the target does not equals the query', function () {
@@ -93,7 +93,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -105,7 +105,7 @@ describe('whynomatch', function () {
       let expected = { a: { $lt: 0 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('find result when the target is equal to the query', function () {
@@ -115,7 +115,7 @@ describe('whynomatch', function () {
       let expected = { a: { $lt: 1 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the target is lower than the query', function () {
@@ -125,7 +125,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -137,7 +137,7 @@ describe('whynomatch', function () {
       let expected = { a: { $lte: 0 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('not find result when the target is lower than the query', function () {
@@ -147,7 +147,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('not find result when the target is equal to the query', function () {
@@ -157,7 +157,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -169,7 +169,7 @@ describe('whynomatch', function () {
       let expected = { a: { $gt: 2 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('find result when the target is equal to the query', function () {
@@ -179,7 +179,7 @@ describe('whynomatch', function () {
       let expected = { a: { $gt: 1 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the target is larger than the query', function () {
@@ -189,7 +189,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -201,7 +201,7 @@ describe('whynomatch', function () {
       let expected = { a: { $gte: 2 } }
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the target is equal to the query', function () {
@@ -211,7 +211,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the target is larger than the query', function () {
@@ -221,7 +221,7 @@ describe('whynomatch', function () {
       let expected = {}
 
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -232,7 +232,7 @@ describe('whynomatch', function () {
 
       let expected = { a: { $in: [ 2, 3 ] }};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when target contained in elements from query', function () {
@@ -241,7 +241,7 @@ describe('whynomatch', function () {
 
       let expected = {};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('find result when target is an array which does not intersects in elements from query', function () {
@@ -250,7 +250,7 @@ describe('whynomatch', function () {
 
       let expected = { a: { $in: [ 2, 3 ] }};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when target is an array which intersects in elements from query', function () {
@@ -259,7 +259,7 @@ describe('whynomatch', function () {
 
       let expected = {};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
 
@@ -270,7 +270,7 @@ describe('whynomatch', function () {
 
       let expected = {};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('find result when target contained in elements from query', function () {
@@ -279,7 +279,7 @@ describe('whynomatch', function () {
 
       let expected = { a: { $nin: [ 1, 2, 3 ]}};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when target is an array which does not intersects in elements from query', function () {
@@ -288,7 +288,7 @@ describe('whynomatch', function () {
 
       let expected = {};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('find result when target is an array which intersects in elements from query', function () {
@@ -297,7 +297,7 @@ describe('whynomatch', function () {
 
       let expected = { a: { $nin: [ 1, 2, 3 ]}};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
   });
   
@@ -308,7 +308,7 @@ describe('whynomatch', function () {
 
       let expected = { a: { $not: { $eq: 1 }}};
       let result = whynomatch(target, query);
-      expect(expected).to.deep.equal(result);
+      expect(result).to.deep.equal(expected);
     });
 
     it('do not find result when the subquery not matches the target', function () {
@@ -317,6 +317,11 @@ describe('whynomatch', function () {
 
       let expected = {};
       let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+  });
+
+  xdescribe('$or operator', function () {
       expect(expected).to.deep.equal(result);
     });
   });

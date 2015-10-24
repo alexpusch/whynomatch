@@ -1,3 +1,24 @@
+let operators = {
+  $eq(target, value){
+    return target === value;
+  },
+  $gt(target, value){
+    return target > value;
+  },
+  $gte(target, value){
+    return target >= value;
+  },
+  $lt(target, value){
+    return target < value;
+  },
+  $lte(target, value){
+    return target <= value;
+  },
+  $ne(target, value){
+    return target !== value;
+  },
+}
+
 function whynomatch(target, query){
   let results = [];
   Object.keys(query).forEach(function(key){
@@ -7,15 +28,24 @@ function whynomatch(target, query){
       let fieldResults = whynomatch(target[key], query[key]);
       for(let i in fieldResults){
         let result = fieldResults[i];
-        results.push({[key]: result});
+        addToResults(results, key, result);
       }
     } else {
-      if(target[key] != value)
-        results.push({[key]: value});
+      if(key in operators){
+        if(!operators[key](target, value)){
+          addToResults(results, key, value);
+        }
+      } else if(target[key] != value){
+        addToResults(results, key, value);
+      }
     }
   })
 
   return results;
+}
+
+function addToResults(results, key, value){
+  results.push({[key]: value})
 }
 
 module.exports = whynomatch

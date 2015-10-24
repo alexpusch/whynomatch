@@ -53,4 +53,176 @@ describe('whynomatch', function () {
     let result = whynomatch(target, query);
     expect(expected).to.deep.equal(result);
   });
+
+  describe('$eq operator', function () {
+    it('find result when the target do not equals the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $eq: 2 } }
+
+      let expected = [{ a: { $eq: 2 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the target does not equals the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $eq: 1 } }
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
+
+  describe('$ne operator', function () {
+    it('find result when the target equals the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $ne: 1 } }
+
+      let expected = [{ a: { $ne: 1 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the target does not equals the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $ne: 2 } }
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
+
+  describe('$lt operator', function () {
+    it('find result when the target is larger than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $lt: 0 }}
+
+      let expected = [{ a: { $lt: 0 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('find result when the target is equal to the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $lt: 1 }}
+
+      let expected = [{ a: { $lt: 1 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the target is lower than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $lt: 2 }}
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
+
+  describe('$lte operator', function () {
+    it('find result when the target is larger to the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $lte: 0 }}
+
+      let expected = [{ a: { $lte: 0 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('not find result when the target is lower than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $lte: 2 }}
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('not find result when the target is equal to the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $lte: 1 }}
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
+
+  describe('$gt operator', function () {
+    it('find result when the target is lower than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $gt: 2 }}
+
+      let expected = [{ a: { $gt: 2 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('find result when the target is equal to the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $gt: 1 }}
+
+      let expected = [{ a: { $gt: 1 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the target is larger than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $gt: 0 }}
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
+
+  describe('$gte operator', function () {
+    it('find result when the target is lower than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $gte: 2 }}
+
+      let expected = [{ a: { $gte: 2 } }]
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the target is equal to the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $gte: 1 }}
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the target is larger than the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: { $gte: 0 }}
+
+      let expected = []
+
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
 });

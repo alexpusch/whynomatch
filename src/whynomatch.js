@@ -38,6 +38,19 @@ let logicalOperators = {
       return value;
     else
       return {};
+  },
+  $or(target, value, key){
+    if(!_.isArray(value))
+      throw new Error(`$or operator expectes an Array. Got: ${value}`);
+
+    let subQueriesResults = _.map(value, function(subQuery){
+      return whynomatch(target, subQuery);
+    });
+
+    if(!_.some(subQueriesResults, _.partial(_.isEqual, {})))
+      return value;
+
+    return {};
   }
 }
 

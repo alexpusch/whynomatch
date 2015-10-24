@@ -321,8 +321,34 @@ describe('whynomatch', function () {
     });
   });
 
-  xdescribe('$or operator', function () {
-      expect(expected).to.deep.equal(result);
+  describe('$or operator', function () {
+    it('find result when non of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $or: [{ a: 2 }, { b: 3 }]}
+
+      let expected = { $or: [{ a: 2 }, { b: 3 }]};
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when some of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $or: [{ a: 2 }, { b: 2 }]}
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when sub queries are an empty array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $or: [] }
+
+      let expected = { $or: [] };
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
     });
   });
 });

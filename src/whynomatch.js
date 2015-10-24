@@ -20,11 +20,10 @@ let operators = {
     return target !== value;
   },
   $in(target, value){
-
-    if(target instanceof Array){
+    if(_.isArray(target)){
       return _.intersection(target, value).length > 0
     } else{     
-      return value.indexOf(target) >= 0;
+      return _.includes(value, target);
     }
   },
   $nin(target, value){
@@ -34,14 +33,13 @@ let operators = {
 
 function whynomatch(target, query){
   let results = [];
-  Object.keys(query).forEach(function(key){
+  
+  _.keys(query).forEach(function(key){
     let value = query[key];
-    if(value instanceof Object && !(value instanceof Array)){
+
+    if(_.isObject(value) && !_.isArray(value)){
       let fieldResults = whynomatch(target[key], query[key]);
-      for(let i in fieldResults){
-        let result = fieldResults[i];
-        addToResults(results, key, result);
-      }
+      _.each(fieldResults, _.partial(addToResults, results, key));
     } else {
       if(key in operators){
         if(!operators[key](target, value)){
@@ -57,7 +55,10 @@ function whynomatch(target, query){
 }
 
 function addToResults(results, key, value){
-  results.push({[key]: value})
+  results.push(createResult(key, value));
 }
 
+function createResult(key, value){
+  return { [key]: value };
+}
 module.exports = whynomatch

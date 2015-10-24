@@ -225,4 +225,80 @@ describe('whynomatch', function () {
       expect(expected).to.deep.equal(result);
     });
   });
+
+  describe('$in operator', function () {
+    it('find result when target does not contained in elements from query', function () {
+      let target = { a: 1 };
+      let query = { a: { $in: [ 2, 3 ]}};
+
+      let expected = [{ a: { $in: [ 2, 3 ] }}];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when target contained in elements from query', function () {
+      let target = { a: 1 };
+      let query = { a: { $in: [ 1, 2, 3 ]}};
+
+      let expected = [];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('find result when target is an array which does not intersects in elements from query', function () {
+      let target = { a: [1, 4] };
+      let query = { a: { $in: [ 2, 3 ]}};
+
+      let expected = [{ a: { $in: [ 2, 3 ] }}];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when target is an array which intersects in elements from query', function () {
+      let target = { a: [1, 4] };
+      let query = { a: { $in: [ 1, 2, 3 ]}};
+
+      let expected = [];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
+
+  describe('$nin operator', function () {
+    it('do not find result when target does not contained in elements from query', function () {
+      let target = { a: 1 };
+      let query = { a: { $nin: [ 2, 3 ]}};
+
+      let expected = [];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('find result when target contained in elements from query', function () {
+      let target = { a: 1 };
+      let query = { a: { $nin: [ 1, 2, 3 ]}};
+
+      let expected = [{ a: { $nin: [ 1, 2, 3 ]}}];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when target is an array which does not intersects in elements from query', function () {
+      let target = { a: [1, 4] };
+      let query = { a: { $nin: [ 2, 3 ]}};
+
+      let expected = [];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('find result when target is an array which intersects in elements from query', function () {
+      let target = { a: [1, 4] };
+      let query = { a: { $nin: [ 1, 2, 3 ]}};
+
+      let expected = [{ a: { $nin: [ 1, 2, 3 ]}}];
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
 });

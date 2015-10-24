@@ -1,3 +1,5 @@
+import _ from "lodash"
+
 let operators = {
   $eq(target, value){
     return target === value;
@@ -17,14 +19,24 @@ let operators = {
   $ne(target, value){
     return target !== value;
   },
+  $in(target, value){
+
+    if(target instanceof Array){
+      return _.intersection(target, value).length > 0
+    } else{     
+      return value.indexOf(target) >= 0;
+    }
+  },
+  $nin(target, value){
+    return !operators["$in"](target, value);
+  }
 }
 
 function whynomatch(target, query){
   let results = [];
   Object.keys(query).forEach(function(key){
     let value = query[key];
-
-    if(value instanceof Object){
+    if(value instanceof Object && !(value instanceof Array)){
       let fieldResults = whynomatch(target[key], query[key]);
       for(let i in fieldResults){
         let result = fieldResults[i];

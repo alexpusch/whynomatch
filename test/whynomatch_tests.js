@@ -300,4 +300,24 @@ describe('whynomatch', function () {
       expect(expected).to.deep.equal(result);
     });
   });
+  
+  describe('$not operator', function () {
+    it('find result when the subquery matches the target', function () {
+      let target = { a: 1, b: 2 };
+      let query = { a: { $not: { $eq: 1 }}};
+
+      let expected = { a: { $not: { $eq: 1 }}};
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+
+    it('do not find result when the subquery not matches the target', function () {
+      let target = { a: 1, b: 2 };
+      let query = { a: { $not: { $eq: 3 }}};
+
+      let expected = {};
+      let result = whynomatch(target, query);
+      expect(expected).to.deep.equal(result);
+    });
+  });
 });

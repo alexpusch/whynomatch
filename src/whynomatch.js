@@ -31,6 +31,16 @@ let comparisionOperators = {
   }
 }
 
+let logicalOperators = {
+  $not(target, value, key){
+    let result = whynomatch(target, value);
+    if(_.isEmpty(result))
+      return value;
+    else
+      return {};
+  }
+}
+
 let virtualOperators = {
   $simpleEq(target, value, key){
     if(target[key] !== value)
@@ -42,6 +52,7 @@ let virtualOperators = {
 }
 
 let operators = _.extend(
+  logicalOperators, 
   virtualOperators, 
   wrapComperisionOperators(comparisionOperators));
 

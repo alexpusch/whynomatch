@@ -53,6 +53,48 @@ describe('whynomatch', function () {
     expect(result).to.deep.equal(expected);
   });
 
+  describe('simple equality operator', function () {
+    it('find result when the target do not equals the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: 2 }
+
+      let expected = { a: 2 }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the target does not equals the query', function () {
+      let target = { a: 1, b: 2 }
+      let query = { a: 1 }
+
+      let expected = {}
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when the query is does not contained in the target, when it is an array', function () {
+      let target = { a: [1, 2] , b: 2 };
+      let query = { a: 3 };
+
+      let expected = { a: 3 };
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the query is contained in the target, when it is an array', function () {
+      let target = { a: [1, 2] , b: 2 };
+      let query = { a: 2 };
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+  });
+
   describe('$eq operator', function () {
     it('find result when the target do not equals the query', function () {
       let target = { a: 1, b: 2 }
@@ -73,6 +115,26 @@ describe('whynomatch', function () {
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
     });
+
+    it('find result when the query is does not contained in the target, when it is an array', function () {
+      let target = { a: [1, 2] , b: 2 };
+      let query = { a: { $eq: 3 } };
+
+      let expected = { a: { $eq: 3 } };
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the query is contained in the target, when it is an array', function () {
+      let target = { a: [1, 2] , b: 2 };
+      let query = { a: { $eq: 2 }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('$ne operator', function () {
@@ -88,6 +150,27 @@ describe('whynomatch', function () {
 
     it('do not find result when the target does not equals the query', function () {
       let target = { a: 1, b: 2 }
+      let query = { a: { $ne: 2 } }
+
+      let expected = {}
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    // TODO: fix this
+    xit('find result when the target contains an element not equal to the query', function () {
+      let target = { a: [1, 2], b: 2 }
+      let query = { a: { $ne: 1 } }
+
+      let expected = { a: { $ne: 1 } }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    xit('do not find result when the target array does not contain the query', function () {
+      let target = { a: [1, 3], b: 2 }
       let query = { a: { $ne: 2 } }
 
       let expected = {}
@@ -127,6 +210,26 @@ describe('whynomatch', function () {
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
     });
+
+    it('find result when the target array does not have an element that is lower than the query', function () {
+      let target = { a: [1, 2], b: 2 }
+      let query = { a: { $lt: 0 }}
+
+      let expected = { a: { $lt: 0 } }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the target array have an element that is lower than the query', function () {
+      let target = { a: [1, 5], b: 2 }
+      let query = { a: { $lt: 2 }}
+
+      let expected = {}
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('$lte operator', function () {
@@ -153,6 +256,26 @@ describe('whynomatch', function () {
     it('not find result when the target is equal to the query', function () {
       let target = { a: 1, b: 2 }
       let query = { a: { $lte: 1 }}
+
+      let expected = {}
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when the target array does not have an element that is equal or lower than the query', function () {
+      let target = { a: [1, 2], b: 2 }
+      let query = { a: { $lte: 0 }}
+
+      let expected = { a: { $lte: 0 } }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the target array have an element that is equal or lower than the query', function () {
+      let target = { a: [1, 5], b: 2 }
+      let query = { a: { $lte: 2 }}
 
       let expected = {}
 
@@ -191,6 +314,26 @@ describe('whynomatch', function () {
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
     });
+
+    it('find result when the target array does not have an element that is larger than the query', function () {
+      let target = { a: [1, 2], b: 2 }
+      let query = { a: { $gt: 3 }}
+
+      let expected = { a: { $gt: 3 } }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the target array have an element that is larger than the query', function () {
+      let target = { a: [1, 5], b: 2 }
+      let query = { a: { $gt: 2 }}
+
+      let expected = {}
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('$gte operator', function () {
@@ -217,6 +360,26 @@ describe('whynomatch', function () {
     it('do not find result when the target is larger than the query', function () {
       let target = { a: 1, b: 2 }
       let query = { a: { $gte: 0 }}
+
+      let expected = {}
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when the target array does not have an element that is equal or larger than the query', function () {
+      let target = { a: [1, 2], b: 2 }
+      let query = { a: { $gte: 3 }}
+
+      let expected = { a: { $gte: 3 } }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the target array have an element that is equal or larger than the query', function () {
+      let target = { a: [1, 5], b: 2 }
+      let query = { a: { $gte: 2 }}
 
       let expected = {}
 
@@ -503,6 +666,26 @@ describe('whynomatch', function () {
       expect(result).to.deep.equal(expected);
     });
 
+    it('find a result when query matchs the target array', function () {
+      let target = { a: 1, b: [21, 23] };
+      let query = { b: { $mod: [7, 1] }};
+
+      let expected = { b: { $mod: [7, 1] }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find a result when query matchs the target array', function () {
+      let target = { a: 1, b: [21, 22] };
+      let query = { b: { $mod: [7, 1] }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
     it('throws an error when the query is not an array', function () {
       let target = { a: 1, b: 22 };
       let query = { b: { $mod: 2 }};
@@ -552,6 +735,26 @@ describe('whynomatch', function () {
     it('do not find result it the query does not match the target', function () {
       let target = { a: 'hello world', b: 2 };
       let query = { a: {$regex: '^hello.*' }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result it the query does not match the target array', function () {
+      let target = { a: ['hello world', 'shalom world'], b: 2 };
+      let query = { a: {$regex: /^goodbay.*/ }};
+
+      let expected = { a: {$regex: /^goodbay.*/ }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result it the query does not match the target array', function () {
+      let target = { a: ['hello world', 'shalom world'], b: 2 };
+      let query = { a: {$regex: /^hello.*/ }};
 
       let expected = {};
 

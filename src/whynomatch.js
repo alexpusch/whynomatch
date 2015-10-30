@@ -20,16 +20,6 @@ let comparisionOperators = {
   $ne(target, value){
     return target !== value;
   },
-  $in(target, value){
-    if(_.isArray(target)){
-      return _.intersection(target, value).length > 0
-    } else{     
-      return _.includes(value, target);
-    }
-  },
-  $nin(target, value){
-    return !comparisionOperators["$in"](target, value);
-  },
   $exists(target, value){
     return (target !== undefined) == value;
   },
@@ -61,6 +51,19 @@ let comparisionOperators = {
     }
     
     return fn.call(target);
+  }
+}
+
+let arrayOperators = {
+  $in(target, value){
+    if(_.isArray(target)){
+      return _.intersection(target, value).length > 0
+    } else{     
+      return _.includes(value, target);
+    }
+  },
+  $nin(target, value){
+    return !arrayOperators["$in"](target, value);
   },
   $all(target, value){
     if(!_.isArray(value))
@@ -132,8 +135,7 @@ let logicalOperators = {
 
 let virtualOperators = {
   $simpleEq(target, value, key){
-    if(target[key] !== value)
-      return value;
+    return operators.$eq(target[key], value, key);
   },
   $nested(target, value, key){
     return whynomatch(target[key], value);
@@ -143,7 +145,8 @@ let virtualOperators = {
 let operators = _.extend(
   logicalOperators, 
   virtualOperators, 
-  wrapComperisionOperators(comparisionOperators));
+  wrapComperisionOperators(comparisionOperators, true),
+  wrapComperisionOperators(arrayOperators));
 
 function whynomatch(target, query){
   let noMatch = {};
@@ -171,17 +174,26 @@ function multiOperator(target, subQueries, key){
   return subQueriesResults;
 }
 
-function wrapComperisionOperators(operators){
+function wrapComperisionOperators(operators, arrayEquality = false){
   return _.transform(operators, function(result, operatorFn, operatorName){
-    let wrapedOperator = function(target, value, key){
-      if(!operatorFn(target, value, key))
+    let wrapedOperator = wrapComperisionOperator(operatorFn, arrayEquality);
+    result[operatorName] = wrapedOperator;
+  });
+}
+
+function wrapComperisionOperator(operatorFn, arrayEquality){
+  return function(target, value, key){
+    if(arrayEquality && _.isArray(target)){
+      if(!_.some(target, _.partial(operatorFn, _, value, key)))
         return value;
 
       return {};
+    } else if(!operatorFn(target, value, key)){
+      return value;
     }
 
-    result[operatorName] = wrapedOperator;
-  });
+    return {};
+  };
 }
 
 function getOperator(key, value){

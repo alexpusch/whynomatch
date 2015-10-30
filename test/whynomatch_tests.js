@@ -743,4 +743,43 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('$size', function () {
+    it('find result when target length does not equal to query', function () {
+      let target = { a: [1, 3, 4] , b: 2 };
+
+      let query = { a: { $size: 5 }};
+      let expected = { a: { $size: 5 }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when target length equals to query', function () {
+      let target = { a: [1, 3, 4] , b: 2 };
+
+      let query = { a: { $size: 3 }};
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when target is not an array', function () {
+      let target = { a: 1 , b: 2 };
+
+      let query = { a: { $size: 3 }};
+      let expected = { a: { $size: 3 }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the query is not an number', function () {
+      let target = { a: 1 , b: 2 };
+      let query = { a: { $elemMatch: [1, 3]}};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

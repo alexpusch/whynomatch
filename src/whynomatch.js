@@ -68,6 +68,14 @@ let comparisionOperators = {
       target = [target];
     }
     return _(value).difference(target).isEmpty();
+  },
+  $size(target, value){
+    if(!_.isNumber(value))
+      throw new Error(`$size operator must recieve a number. Got: ${value}`)
+    if(!_.isArray(target))
+      return false;
+
+    return target.length === value;
   }
 }
 

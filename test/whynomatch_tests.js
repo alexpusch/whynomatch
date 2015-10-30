@@ -566,4 +566,83 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('$where', function () {
+    describe('function is js function', function () {
+      it('find a result if the query function return false for the targer', function () {
+        let target = { a: 1, b: 2 };
+
+        let whereFn = function(){ return this.a > 2 };
+        let query = { $where: whereFn, b: 2 };
+        let expected = { $where: whereFn };
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+
+      it('do not find a result if the query function return true for the targer', function () {
+        let target = { a: 1, b: 2 };
+
+        let whereFn = function(){ return this.a > 0 };
+        let query = { $where: whereFn, b: 2 };
+        let expected = {};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+
+      xit('do not find a result if the query function uses obj as this and return true for the targer', function () {
+        let target = { a: 1, b: 2 };
+
+        let whereFn = function(){ return obj.a > 0 };
+        let query = { $where: whereFn, b: 2 };
+        let expected = {};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+    });
+
+    describe('function is string function', function () {
+      it('find a result if the query function return false for the targer', function () {
+        let target = { a: 1, b: 2 };
+
+        let whereFn = "this.a > 2";
+        let query = { $where: whereFn, b: 2 };
+        let expected = { $where: whereFn };
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+
+      it('do not find a result if the query function return true for the targer', function () {
+        let target = { a: 1, b: 2 };
+
+        let whereFn = "this.a > 0";
+        let query = { $where: whereFn, b: 2 };
+        let expected = {};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+
+      it('do not find a result if the query function uses obj as this and return true for the targer', function () {
+        let target = { a: 1, b: 2 };
+
+        let whereFn = "obj.a > 0";
+        let query = { $where: whereFn, b: 2 };
+        let expected = {};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+    });
+
+    it('throws an error when the query is not a string or a fucntion', function () {
+      let target = { a: 'hello world', b: 2 };
+      let query = { a: {$where: 7 }};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

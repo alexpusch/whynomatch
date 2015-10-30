@@ -46,6 +46,20 @@ let comparisionOperators = {
       throw new Error(`$regex operator must recieve a RegExp or a string. got: ${value}`)
 
     return new RegExp(value).test(target);
+  },
+  $where(target, value){
+    let fn;
+    
+    if(_.isFunction(value)){
+      fn = value;
+    }
+    else if(_.isString(value)){
+      eval(`fn = function(){var obj = this; return ${value}}`)
+    } else{
+      throw new Error(`$where operator must recieve a function or a string. Got: ${value}`)
+    }
+    
+    return fn.call(target);
   }
 }
 

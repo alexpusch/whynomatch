@@ -40,18 +40,32 @@ let logicalOperators = {
       return {};
   },
   $or(target, value, key){
-    if(!_.isArray(value))
-      throw new Error(`$or operator expectes an Array. Got: ${value}`);
+    let subQueriesResults = multiOperator(target, value, key);
 
-    let subQueriesResults = _.map(value, function(subQuery){
-      return whynomatch(target, subQuery);
-    });
-
-    if(!_.some(subQueriesResults, _.partial(_.isEqual, {})))
+    if(subQueriesResults.length === value.length)
       return value;
 
     return {};
+  },
+  $and(target, value, key){
+    let subQueriesResults = multiOperator(target, value, key);
+
+    if(subQueriesResults.length > 0)
+      return subQueriesResults;
+
+    return {};
   }
+}
+
+function multiOperator(target, subQueries, key){
+  if(!_.isArray(subQueries) || subQueries.length === 0)
+      throw new Error(`${key} operator expectes an Array. Got: ${subQueries}`);
+
+  let subQueriesResults = _(subQueries)
+    .map(_.partial(whynomatch, target))
+    .reject(_.partial(_.isEqual, {})).value();
+
+  return subQueriesResults;
 }
 
 let virtualOperators = {

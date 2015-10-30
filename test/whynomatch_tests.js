@@ -341,14 +341,53 @@ describe('whynomatch', function () {
       expect(result).to.deep.equal(expected);
     });
 
-    it('find result when sub queries are an empty array', function () {
+    it('throws an error when the value given is an empty array', function () {
       let target = { a: 1, b: 2 };
-      let query = { $or: [] }
+      let query = { $or: []};
 
-      let expected = { $or: [] };
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws an error when the value given is not an array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $or: 1};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
+
+  describe('$and operator', function () {
+    it('find result when non of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $and: [{ a: 2 }, { b: 3 }]}
+
+      let expected = { $and: [{ a: 2 }, { b: 3 }]};
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when some of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $and: [{ a: 2 }, { b: 2 }]}
+
+      let expected = { $and: [{ a: 2 }]};
 
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the value given is an empty array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $and: []};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws an error when the value given is not an array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $and: 1};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
 });

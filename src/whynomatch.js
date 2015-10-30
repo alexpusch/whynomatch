@@ -40,6 +40,12 @@ let comparisionOperators = {
     let reminder = value[1];
 
     return target % divisor === reminder;
+  },
+  $regex(target, value){
+    if(!_.isString(value) && !_.isRegExp(value))
+      throw new Error(`$regex operator must recieve a RegExp or a string. got: ${value}`)
+
+    return new RegExp(value).test(target);
   }
 }
 

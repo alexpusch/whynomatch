@@ -517,4 +517,53 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('$regex', function () {
+    it('find result it the query does not match the target', function () {
+      let target = { a: 'hello world', b: 2 };
+      let query = { a: {$regex: /^goodbay.*/ }};
+
+      let expected = { a: {$regex: /^goodbay.*/ }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result it the query does not match the target', function () {
+      let target = { a: 'hello world', b: 2 };
+      let query = { a: {$regex: /^hello.*/ }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result it the query does not match the target', function () {
+      let target = { a: 'hello world', b: 2 };
+      let query = { a: {$regex: '^goodbay.*' }};
+
+      let expected = { a: {$regex: '^goodbay.*' }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result it the query does not match the target', function () {
+      let target = { a: 'hello world', b: 2 };
+      let query = { a: {$regex: '^hello.*' }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the query is not a string or a regex', function () {
+      let target = { a: 'hello world', b: 2 };
+      let query = { a: {$regex: 7 }};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

@@ -31,6 +31,15 @@ let comparisionOperators = {
   },
   $exists(target, value){
     return (target !== undefined) == value;
+  },
+  $mod(target, value){
+    if(!_.isArray(value) || value.length !== 2)
+      throw new Error(`$mod operator must recieve an array of size 2: [divisor, reminder]. Got: ${value}`);
+
+    let divisor = value[0];
+    let reminder = value[1];
+
+    return target % divisor === reminder;
   }
 }
 

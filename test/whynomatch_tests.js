@@ -481,4 +481,40 @@ describe('whynomatch', function () {
       });
     });
   });
+
+  describe('$mod', function () {
+    it('find a result when query matchs the target', function () {
+      let target = { a: 1, b: 21 };
+      let query = { b: { $mod: [7, 1] }};
+
+      let expected = { b: { $mod: [7, 1] }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find a result when query matchs the target', function () {
+      let target = { a: 1, b: 22 };
+      let query = { b: { $mod: [7, 1] }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the query is not an array', function () {
+      let target = { a: 1, b: 22 };
+      let query = { b: { $mod: 2 }};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws an error when the query an array not of size 2', function () {
+      let target = { a: 1, b: 22 };
+      let query = { b: { $mod: [1, 3, 4] }};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

@@ -355,6 +355,51 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+  
+  describe('$nor operator', function () {
+    it('do not find result when non of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $nor: [{ a: 2 }, { b: 3 }]}
+
+      let expected = { };
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when some of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $nor: [{ a: 2 }, { b: 2 }]}
+
+      let expected = { $nor: [{ a: 2 }, { b: 2 }]};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when all of the sub queries match', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $nor: [{ a: 1 }, { b: 2 }]};
+
+      let expected = { $nor: [{ a: 1 }, { b: 2 }]};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the value given is an empty array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $nor: []};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws an error when the value given is not an array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $nor: 1};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 
   describe('$and operator', function () {
     it('find result when non of the sub queries match', function () {

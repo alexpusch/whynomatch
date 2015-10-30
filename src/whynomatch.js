@@ -47,6 +47,14 @@ let logicalOperators = {
 
     return {};
   },
+  $nor(target, value, key){
+    let subQueriesResults = multiOperator(target, value, key);
+
+    if(subQueriesResults.length !== value.length)
+      return value;
+
+    return {};
+  },
   $and(target, value, key){
     let subQueriesResults = multiOperator(target, value, key);
 

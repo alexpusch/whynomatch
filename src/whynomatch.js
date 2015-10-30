@@ -134,11 +134,16 @@ let logicalOperators = {
 }
 
 let virtualOperators = {
-  $simpleEq(target, value, key){
-    return operators.$eq(target[key], value, key);
-  },
   $nested(target, value, key){
-    return whynomatch(target[key], value);
+    let parts = key.split('.');
+    let innerObj = _.reduce(parts, function(result, value, key){
+      if(result === undefined)
+        return undefined;
+
+      return result[value];
+    }, target);
+
+    return whynomatch(innerObj, value);
   }
 }
 
@@ -150,6 +155,10 @@ let operators = _.extend(
 
 function whynomatch(target, query){
   let noMatch = {};
+
+  if(!_.isPlainObject(query)){
+    return operators.$eq(target, query);
+  }
 
   _.keys(query).forEach(function(key){
     let value = query[key];
@@ -201,8 +210,6 @@ function getOperator(key, value){
 
   if(key in operators)
     operatorName = key
-  else if (!_.isObject(value))
-    operatorName = "$simpleEq";
   else
     operatorName = "$nested";  
 

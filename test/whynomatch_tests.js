@@ -42,15 +42,87 @@ describe('whynomatch', function () {
     let result = whynomatch(target, query);
     expect(result).to.deep.equal(expected);
   });
+ 
+  describe('nesting', function () {
+    it('find result for a failed nested query', function () {
+      let target = { a: { b: 3, c: 1} }
+      let query = { a: { b: 3, c: 4 } }
 
-  it('works for a nested property', function () {
-    let target = { a: { b: 3, c: 1} }
-    let query = { a: { b: 3, c: 4 } }
+      let expected = { a: { c: 4 } }
 
-    let expected = { a: { c: 4 } }
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
 
-    let result = whynomatch(target, query);
-    expect(result).to.deep.equal(expected);
+    it('do not find result for a successfull nested query', function () {
+      let target = { a: { b: 3, c: 1}};
+      let query = { a: { b: 3, c: 1 }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result for a failed nested query with operators', function () {
+      let target = { a: { b: 3, c: 1}};
+      let query = { a: { b: 3, c: { $gt: 2 }}};
+
+      let expected = { a: { c: { $gt: 2 }}};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result for a successfull nested query with operators', function () {
+      let target = { a: { b: 3, c: 1} }
+      let query = { a: { b: 3, c: {$lt: 2} } }
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result for a failed short syntax nested query', function () {
+      let target = { a: { b: 3, c: 1}};
+      let query = { "a.c": 4 };
+
+      let expected = { "a.c": 4 };
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result for a successfull short syntax query', function () {
+      let target = { a: { b: 3, c: 1}};
+      let query = { "a.c": 1 };
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result for a failed short syntax nested query with operators', function () {
+      let target = { a: { b: 3, c: 1}};
+      let query = { "a.c": { $exists: 0 }};
+
+      let expected = { "a.c": { $exists: 0 }};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result for a successfull short syntax query with operators', function () {
+      let target = { a: { b: 3, c: 1}};
+      let query = { "a.c": { $lte: 1 }};
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('simple equality operator', function () {
@@ -794,6 +866,7 @@ describe('whynomatch', function () {
         expect(result).to.deep.equal(expected);
       });
 
+      // TODO: fix this
       xit('do not find a result if the query function uses obj as this and return true for the targer', function () {
         let target = { a: 1, b: 2 };
 

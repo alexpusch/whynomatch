@@ -645,4 +645,43 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('$all operator', function () {
+    it('find result if the target does not contains all the values in the query', function() {
+      let target = { a: [1, 3] , b: 2 };
+
+      let query = { a: { $all: [1, 3, 4]}};
+      let expected = { a: { $all: [1, 3, 4]}};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result if the target contains all the values in the query', function() {
+      let target = { a: [1, 3, 4] , b: 2 };
+
+      let query = { a: { $all: [1, 3]}};
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result if the non array target is contained in values of the query', function() {
+      let target = { a: 1 , b: 2 };
+
+      let query = { a: { $all: [1]}};
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the query is not a array', function () {
+      let target = { a: 1 , b: 2 };
+      let query = { a: { $all: 1}};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

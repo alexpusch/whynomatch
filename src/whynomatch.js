@@ -49,7 +49,7 @@ let comparisionOperators = {
   },
   $where(target, value){
     let fn;
-    
+
     if(_.isFunction(value)){
       fn = value;
     }
@@ -60,6 +60,14 @@ let comparisionOperators = {
     }
     
     return fn.call(target);
+  },
+  $all(target, value){
+    if(!_.isArray(value))
+      throw new Error(`$all operator must recieve an array. Got: ${value}`)
+    if(!_.isArray(target)){
+      target = [target];
+    }
+    return _(value).difference(target).isEmpty();
   }
 }
 

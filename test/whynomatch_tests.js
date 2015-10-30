@@ -684,4 +684,63 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('$elemMatch', function () {
+    it('find result when none of the target array matches the query', function () {
+      let target = { a: [{a: 1}, {a: 2}, {a: 3}] , b: 2 };
+
+      let query = { a: { $elemMatch: { a: { $gt: 5 }}}};
+      let expected = { a: { $elemMatch: { a: { $gt: 5 }}}};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when one of the target array matches the query', function () {
+      let target = { a: [{a: 1}, {a: 2}, {a: 3}] , b: 2 };
+
+      let query = { a: { $elemMatch: { a: { $gt: 2 }}}};
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when none of the target array matches the query, and target is an array of non objects', function () {
+      let target = { a: [1, 2, 3] , b: 2 };
+
+      let query = { a: { $elemMatch: { $gt: 5 }}};
+      let expected = { a: { $elemMatch: { $gt: 5 }}};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when one of the target array matches the query, and target is an array of non objects', function () {
+      let target = { a: [1, 2, 3] , b: 2 };
+
+      let query = { a: { $elemMatch: { $gt: 2 }}};
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when target is not an array', function () {
+      let target = { a: 1 , b: 2 };
+
+      let query = { a: { $elemMatch: { a: { $gt: 5 }}}};
+      let expected = { a: { $elemMatch: { a: { $gt: 5 }}}};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the query is not an object', function () {
+      let target = { a: 1 , b: 2 };
+      let query = { a: { $elemMatch: 1}};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

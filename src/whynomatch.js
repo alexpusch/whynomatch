@@ -102,6 +102,22 @@ let logicalOperators = {
       return subQueriesResults;
 
     return {};
+  },
+  $elemMatch(target, value, key){
+    if(!_.isPlainObject(value))
+      throw new Error(`$elemMatch expectes an object. Got: ${value}`)
+
+    if(!_.isArray(target))
+      return value;
+
+    let subQueriesResults = _(target)
+      .map(_.partial(whynomatch, _, value))
+      .reject(_.partial(_.isEqual, {})).value();
+
+    if(subQueriesResults.length === target.length)
+      return value;
+    
+    return {};
   }
 }
 
@@ -132,7 +148,6 @@ let operators = _.extend(
   wrapComperisionOperators(comparisionOperators));
 
 function whynomatch(target, query){
-  
   let noMatch = {};
 
   _.keys(query).forEach(function(key){
@@ -144,7 +159,6 @@ function whynomatch(target, query){
     if(!isEmpty(operatorResults))
       noMatch[key] = operatorResults;
   });
-  
   return noMatch;
 }
 

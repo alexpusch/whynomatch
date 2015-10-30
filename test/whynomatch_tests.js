@@ -435,4 +435,50 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('$exists', function () {
+    describe('true', function () {
+      it('find a result when the query field does not exists in target', function () {
+        let target = { a: 1, b: 2 };
+        let query = { c: { $exists: 1 }};
+
+        let expected = { c: { $exists: 1 }};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+
+      it('do not find a result when the query field exists in target', function () {
+        let target = { a: 1, b: 2 };
+        let query = { a: { $exists: 1 }};
+
+        let expected = {};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+    });
+
+    describe('false', function () {
+      it('do not find a result when the query field does not exists in target', function () {
+        let target = { a: 1, b: 2 };
+        let query = { c: { $exists: 0 }};
+
+        let expected = {};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+
+      it('find a result when the query field exists in target', function () {
+        let target = { a: 1, b: 2 };
+        let query = { a: { $exists: 0 }};
+
+        let expected = { a: { $exists: 0 }};
+
+        let result = whynomatch(target, query);
+        expect(result).to.deep.equal(expected);
+      });
+    });
+  });
 });

@@ -28,6 +28,9 @@ let comparisionOperators = {
   },
   $nin(target, value){
     return !comparisionOperators["$in"](target, value);
+  },
+  $exists(target, value){
+    return (target !== undefined) == value;
   }
 }
 

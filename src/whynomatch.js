@@ -1,4 +1,5 @@
 import _ from "lodash"
+import MongoParsingError from "./mongo_parsing_error"
 
 let comparisionOperators = {
   $eq(target, value){
@@ -34,7 +35,7 @@ let comparisionOperators = {
   },
   $mod(target, value){
     if(!_.isArray(value) || value.length !== 2)
-      throw new Error(`$mod operator must recieve an array of size 2: [divisor, reminder]. Got: ${value}`);
+      throw new MongoParsingError('mod', 'array of size 2: [dividor, reminder]', value);
 
     let divisor = value[0];
     let reminder = value[1];
@@ -43,7 +44,7 @@ let comparisionOperators = {
   },
   $regex(target, value){
     if(!_.isString(value) && !_.isRegExp(value))
-      throw new Error(`$regex operator must recieve a RegExp or a string. got: ${value}`)
+      throw new MongoParsingError('regex', 'RegExp or a string', value);
 
     return new RegExp(value).test(target);
   },
@@ -56,14 +57,14 @@ let comparisionOperators = {
     else if(_.isString(value)){
       eval(`fn = function(){var obj = this; return ${value}}`)
     } else{
-      throw new Error(`$where operator must recieve a function or a string. Got: ${value}`)
+      throw new MongoParsingError('where', 'function or a string', value);
     }
     
     return fn.call(target);
   },
   $all(target, value){
     if(!_.isArray(value))
-      throw new Error(`$all operator must recieve an array. Got: ${value}`)
+      throw new MongoParsingError('$all', 'Array', value);
     if(!_.isArray(target)){
       target = [target];
     }
@@ -71,7 +72,7 @@ let comparisionOperators = {
   },
   $size(target, value){
     if(!_.isNumber(value))
-      throw new Error(`$size operator must recieve a number. Got: ${value}`)
+      throw new MongoParsingError('size', 'number', value);
     if(!_.isArray(target))
       return false;
 
@@ -113,7 +114,7 @@ let logicalOperators = {
   },
   $elemMatch(target, value, key){
     if(!_.isPlainObject(value))
-      throw new Error(`$elemMatch expectes an object. Got: ${value}`)
+      throw new MongoParsingError('elemMatch', 'object', value);
 
     if(!_.isArray(target))
       return value;
@@ -127,17 +128,6 @@ let logicalOperators = {
     
     return {};
   }
-}
-
-function multiOperator(target, subQueries, key){
-  if(!_.isArray(subQueries) || subQueries.length === 0)
-      throw new Error(`${key} operator expectes an Array. Got: ${subQueries}`);
-
-  let subQueriesResults = _(subQueries)
-    .map(_.partial(whynomatch, target))
-    .reject(_.partial(_.isEqual, {})).value();
-
-  return subQueriesResults;
 }
 
 let virtualOperators = {
@@ -168,6 +158,17 @@ function whynomatch(target, query){
       noMatch[key] = operatorResults;
   });
   return noMatch;
+}
+
+function multiOperator(target, subQueries, key){
+  if(!_.isArray(subQueries) || subQueries.length === 0)
+    throw new MongoParsingError(key, 'Array', subQueries);
+
+  let subQueriesResults = _(subQueries)
+    .map(_.partial(whynomatch, target))
+    .reject(_.partial(_.isEqual, {})).value();
+
+  return subQueriesResults;
 }
 
 function wrapComperisionOperators(operators){

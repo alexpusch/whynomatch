@@ -1,0 +1,41 @@
+$HEADER_HEIGHT: 80px
+$COLUMN_TITLE_HEIGHT: 30px
+
+html
+  height: 100%
+
+body
+  height: 100%
+
+.container
+  height: 100%
+  padding: 20px
+  margin: 0
+
+  .header
+    height: $HEADER_HEIGHT
+    
+    .title, .subtitle
+      display: inline-block
+      margin: 0px
+
+    .subtitle
+      padding-left: 20px
+      color: gray
+
+  .content
+    height: calc(100% - #{$HEADER_HEIGHT})
+
+    .column
+      height: 100%
+
+      .title
+        height: $COLUMN_TITLE_HEIGHT
+        margin: 0px
+        padding-left: 10px
+
+      .editor
+        height: calc(100% - #{$COLUMN_TITLE_HEIGHT})
+
+        .CodeMirror
+          height: 100%

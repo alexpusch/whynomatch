@@ -24,5 +24,7 @@
     "webpack": "^1.12.2",
     "webpack-notifier": "^1.2.1"
   },
+  "dependencies": {
+    "codemirror": "^5.8.0"
   }
 }

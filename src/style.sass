@@ -14,12 +14,15 @@ body
   box-sizing: border-box
   margin: 0
 
+  
+
   .header
     height: $HEADER_HEIGHT
-    
+      
     .title, .subtitle
       display: inline-block
       margin: 0px
+      font-family: 'Open Sans', sans-serif
 
     .subtitle
       padding-left: 20px
@@ -35,7 +38,9 @@ body
         height: $COLUMN_TITLE_HEIGHT
         margin: 0px
         padding-left: 10px
-
+        font-family: 'Open Sans', sans-serif
+        color: rgb(181, 162, 116)
+        
       .editor
         height: calc(100% - #{$COLUMN_TITLE_HEIGHT})
         position: relative

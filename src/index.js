@@ -7,7 +7,7 @@ import {} from '../node_modules/codemirror/mode/javascript/javascript.js'
 
 import whynomatch from 'whynomatch'
 import $ from 'jquery'
-
+import JSON5 from "json5"
 
 $(function(){
   let objectEditor = createEditor('.object');
@@ -39,10 +39,10 @@ function createEditor(selector, options = {}){
 }
 
 function update(objectEditor, queryEditor, outputEditor){
-  let object = JSON.parse(objectEditor.getValue());
-  let query = JSON.parse(queryEditor.getValue());
+  let object = JSON5.parse(objectEditor.getValue());
+  let query = JSON5.parse(queryEditor.getValue());
   if(object && query){
     let result = whynomatch(object, query);
-    outputEditor.setValue(JSON.stringify(result, null, 2));
+    outputEditor.setValue(JSON5.stringify(result, null, 2));
   }
 }

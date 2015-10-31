@@ -1,5 +1,6 @@
 $HEADER_HEIGHT: 80px
 $COLUMN_TITLE_HEIGHT: 30px
+$ERROR_HEIGHT: 20px
 
 html
   height: 100%
@@ -10,6 +11,7 @@ body
 .container
   height: 100%
   padding: 20px
+  box-sizing: border-box
   margin: 0
 
   .header
@@ -36,6 +38,17 @@ body
 
       .editor
         height: calc(100% - #{$COLUMN_TITLE_HEIGHT})
+        position: relative
 
         .CodeMirror
           height: 100%
+
+        .error
+          position: absolute;
+          bottom: 0px;
+          background-color: rgba(249, 157, 39, 0.6);
+          z-index: 100;
+          width: 90%;
+          border-radius: 0 7px 0 0;
+          padding: 7px 10px;
+          color: #310404;

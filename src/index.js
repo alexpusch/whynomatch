@@ -7,7 +7,7 @@ import {} from '../node_modules/codemirror/mode/javascript/javascript.js'
 
 import whynomatch from 'whynomatch'
 import $ from 'jquery'
-import JSON5 from "json5"
+import JSON5 from "json5" 
 
 $(function(){
   let objectEditor = createEditor('.object');
@@ -39,10 +39,64 @@ function createEditor(selector, options = {}){
 }
 
 function update(objectEditor, queryEditor, outputEditor){
-  let object = JSON5.parse(objectEditor.getValue());
-  let query = JSON5.parse(queryEditor.getValue());
+  let object = tryParse(objectEditor);
+  let query = tryParse(queryEditor);
   if(object && query){
-    let result = whynomatch(object, query);
-    outputEditor.setValue(JSON5.stringify(result, null, 2));
+    try{
+      let result = whynomatch(object, query);
+      outputEditor.setValue(JSON5.stringify(result, null, 2));
+    } catch(e){
+      setError(queryEditor, e.message);
+    }
   }
+}
+
+function tryParse(editor){
+  let parsedValue;
+  try{
+    let value = editor.getValue();
+    if(value !== ""){
+      parsedValue = JSON5.parse(value);
+    }
+    clearError(editor);
+  } catch(e){
+    setError(editor, e.message);
+  }
+
+  return parsedValue;
+}
+
+function clearError(editor){
+  let errorDiv = findErrorDiv(editor);
+
+  if(errorDiv.length > 0){
+    errorDiv.text("");
+    errorDiv.remove();
+  }
+}
+
+function setError(editor, message){
+  let errorDiv = findErrorDiv(editor);
+
+  if(errorDiv.length === 0){
+    errorDiv = createErrorDiv(editor);
+  } 
+
+  errorDiv.text(message);
+}
+
+function createErrorDiv(editor){
+  let errorDiv = $("<div></div>");
+  errorDiv.addClass("error");
+
+  let wrapperElement = $(editor.getWrapperElement());
+  errorDiv.appendTo(wrapperElement);
+  return errorDiv;
+}
+
+function findErrorDiv(editor){
+  let wrapperElement = $(editor.getWrapperElement());
+  let errorDiv = wrapperElement.find(".error").first();
+
+  return errorDiv;
 }

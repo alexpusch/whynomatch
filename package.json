@@ -1,8 +1,12 @@
 {
   "name": "whynomatch",
-  "version": "0.0.1",
-  "description": "Why does an object does not match a mongo query?",
+  "version": "1.0.0",
+  "description": "Why does an object not match a mongo query?",
   "main": "dist/whynomatch.js",
+  "homepage": "https://github.com/alexpusch/whynomatch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexpusch/whynomatch.git"
   },
   "keywords": [
     "mongodb"

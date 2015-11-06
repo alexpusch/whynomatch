@@ -63,11 +63,27 @@ let comparisionOperators = {
 
 let arrayOperators = {
   $in(target, value){
-    if(_.isArray(target)){
-      return _.intersection(target, value).length > 0
-    } else{     
-      return _.includes(value, target);
+    if(!_.isArray(value))
+      throw new MongoParsingError('in', 'array', value);
+
+    if(!_.isArray(target)){
+      target = [target];
+    } 
+
+    let match = comparisionOperators.$shortEq
+    
+    for(let i in target){
+      let curTarget = target[i];
+      for(let j in value){
+        let curValue = value[j];
+
+        if(match(curTarget, curValue)){
+          return true;
+        }
+      }
     }
+
+    return false;
   },
   $nin(target, value){
     return !arrayOperators["$in"](target, value);

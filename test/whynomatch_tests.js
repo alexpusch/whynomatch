@@ -516,6 +516,24 @@ describe('whynomatch', function () {
       expect(result).to.deep.equal(expected);
     });
 
+    it('find result when target does not contained in elements from regex query', function () {
+      let target = { a: "hello world" };
+      let query = { a: { $in: [ /s.+?m/, 3 ]}};
+
+      let expected = { a: { $in: [ /s.+?m/, 3 ]}};
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when target contained in elements from regex query', function () {
+      let target = { a: "hello world" };
+      let query = { a: { $in: [ /h.+?o/, 3 ]}};
+
+      let expected = {};
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
     it('find result when target is an array which does not intersects in elements from query', function () {
       let target = { a: [1, 4] };
       let query = { a: { $in: [ 2, 3 ]}};
@@ -532,6 +550,13 @@ describe('whynomatch', function () {
       let expected = {};
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the value given is not an array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $in: 1};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
 
@@ -570,6 +595,31 @@ describe('whynomatch', function () {
       let expected = { a: { $nin: [ 1, 2, 3 ]}};
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
+    });
+
+    it('find result when target contained in elements from regex query', function () {
+      let target = { a: "hello world" };
+      let query = { a: { $nin: [ /s.+?m/, 3 ]}};
+
+      let expected = {};
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when target contained in elements from regex query', function () {
+      let target = { a: "hello world" };
+      let query = { a: { $nin: [ /h.+?o/, 3 ]}};
+
+      let expected = { a: { $nin: [ /h.+?o/, 3 ]}};
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('throws an error when the value given is not an array', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $nin: 1};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
   

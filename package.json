@@ -2,9 +2,7 @@
   "name": "whynomatch",
   "version": "0.0.1",
   "description": "Why does an object does not match a mongo query?",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha --compilers es6:babel/register"
+  "main": "dist/whynomatch.js",
   },
   "keywords": [
     "mongodb"
@@ -23,5 +21,10 @@
   },
   "dependencies": {
     "lodash": "^3.10.1"
+  },
+  "scripts": {
+    "test": "mocha --compilers es6:babel/register",
+    "compile": "webpack",
+    "prepublish": "npm run-script compile"
   }
 }

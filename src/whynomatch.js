@@ -51,6 +51,13 @@ let comparisionOperators = {
     }
     
     return fn.call(target);
+  },
+  $shortEq(target, value, key){
+    if(_.isRegExp(value)){
+      return value.test(target)
+    } else {
+      return value === target;
+    }
   }
 }
 
@@ -157,7 +164,7 @@ function whynomatch(target, query){
   let noMatch = {};
 
   if(!_.isPlainObject(query)){
-    return operators.$eq(target, query);
+    return operators.$shortEq(target, query);
   }
 
   _.keys(query).forEach(function(key){
@@ -220,4 +227,4 @@ function isEmpty(value){
   return value == undefined || _.isEqual(value, {});
 }
 
-module.exports = whynomatch
+export default whynomatch;

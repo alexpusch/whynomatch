@@ -165,6 +165,36 @@ describe('whynomatch', function () {
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
     });
+
+    it('find result when the query is a non matching regex', function () {
+      let target = { a: "shalom world" };
+      let query = { a: /hello/ };
+
+      let expected = { a: /hello/ };
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the query is a matching regex', function () {
+      let target = { a: "hello world" };
+      let query = { a: /hello/ };
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result when the query is a matching regex and target is an array', function () {
+      let target = { a: ["hello world", "shalom world"] };
+      let query = { a: /hello/ };
+
+      let expected = {};
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
   });
 
   describe('$eq operator', function () {
@@ -301,6 +331,13 @@ describe('whynomatch', function () {
 
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
+    });
+
+    xit('throws when used as first level operator', function () {
+      let target = { a: 1, b: 2 };
+      let query = { $lt: 1};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
 

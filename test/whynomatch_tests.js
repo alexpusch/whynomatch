@@ -1095,4 +1095,13 @@ describe('whynomatch', function () {
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
   });
+
+  describe('errors', function () {
+    it('throws for unsupported operators', function () {
+      let target = { a: 1 , b: 2 };
+      let query = { a: { $shmop: [1, 3]}};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+  });
 });

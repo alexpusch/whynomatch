@@ -215,10 +215,14 @@ function wrapComperisionOperator(operatorFn, arrayEquality){
 function getOperator(key, value){
   let operatorName;
 
-  if(key in operators)
-    operatorName = key
-  else
+  if(/^\$.+/.test(key)){
+    if(key in operators)
+      operatorName = key
+    else
+      throw new Error(`${key} is an unsupported operator`);
+  } else{
     operatorName = "$nested";  
+  }
 
   return operators[operatorName];
 }

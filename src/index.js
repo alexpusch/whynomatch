@@ -1,4 +1,5 @@
-require('../node_modules/codemirror/theme/elegant.css')
+// require('../node_modules/codemirror/theme/elegant.css')
+require('../node_modules/codemirror/theme/ambiance.css')
 require('../node_modules/codemirror/lib/codemirror.css')
 require('./style.sass')
 
@@ -30,7 +31,7 @@ function createEditor(selector, options = {}){
 
   return CodeMirror(element, { 
     value: options.value ? options.value: '',
-    theme: 'elegant',
+    theme: 'ambiance',
     lineNumbers: true,
     matchBrackets: true,
     readOnly: options.readonly || false,

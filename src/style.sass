@@ -1,4 +1,4 @@
-$HEADER_HEIGHT: 80px
+$HEADER_HEIGHT: 40px
 $COLUMN_TITLE_HEIGHT: 30px
 $ERROR_HEIGHT: 20px
 
@@ -7,29 +7,53 @@ html
 
 body
   height: 100%
+  background: #3C3C3C
 
 .container
   height: 100%
-  padding: 20px
+  padding: 0 0 20px 0
   box-sizing: border-box
   margin: 0
 
-  
-
   .header
     height: $HEADER_HEIGHT
-      
+    color: white
+    padding: 10px 20px;
+    background-color: #202020;
+
     .title, .subtitle
       display: inline-block
       margin: 0px
-      font-family: 'Open Sans', sans-serif
+      font-family: 'Roboto', sans-serif
+      color: #eee
+
+    .title
+      background-image: url("/dist/assets/logo.png");
+      background-repeat: no-repeat;
+      background-position: 0px 3px;
+      background-size: 37px;
+      padding: 8px 0 0 48px;
+      letter-spacing: 5px;
+      overflow: visible;
 
     .subtitle
-      padding-left: 20px
-      color: gray
+      padding-left: 8px;
+      font-size: 16pt;
+      font-family: Courgette
+      color: #EECBAE
+      
+    .github
+      float: right;
+      background-image: url("/dist/assets/github.png");
+      height: 40px;
+      width: 40px;
+      background-size: 40px;
+      background-repeat: no-repeat;
 
   .content
     height: calc(100% - #{$HEADER_HEIGHT})
+    padding: 20px
+    box-sizing: border-box;
 
     .column
       height: 100%
@@ -37,9 +61,11 @@ body
       .title
         height: $COLUMN_TITLE_HEIGHT
         margin: 0px
-        padding-left: 10px
-        font-family: 'Open Sans', sans-serif
-        color: rgb(181, 162, 116)
+        padding-left: 32px
+        font-family: 'Roboto', sans-serif
+        color: white
+        letter-spacing: 4px
+        font-size: 11pt
         
       .editor
         height: calc(100% - #{$COLUMN_TITLE_HEIGHT})
@@ -57,3 +83,13 @@ body
           border-radius: 0 7px 0 0;
           padding: 7px 10px;
           color: #310404;
+
+.cm-s-ambiance.CodeMirror.CodeMirror-focused
+  background-color: #272727
+  transition: background-color 0.5s
+
+.cm-s-ambiance .cm-comment
+    color: #999
+
+
+

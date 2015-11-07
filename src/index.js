@@ -1,13 +1,12 @@
-require('./style.sass')
-require('../node_modules/codemirror/lib/codemirror.css')
 require('../node_modules/codemirror/theme/elegant.css')
+require('../node_modules/codemirror/lib/codemirror.css')
+require('./style.sass')
 
 import CodeMirror from '../node_modules/codemirror/lib/codemirror.js'
 import {} from '../node_modules/codemirror/mode/javascript/javascript.js'
-
+import JSON5P from "./json5p"
 import whynomatch from 'whynomatch'
 import $ from 'jquery'
-import JSON5 from "json5" 
 
 $(function(){
   let objectEditor = createEditor('.object', {value: getDefaultTarget()});
@@ -45,6 +44,7 @@ function createEditor(selector, options = {}){
 function update(objectEditor, queryEditor, outputEditor){
   let object = tryParse(objectEditor);
   let query = tryParse(queryEditor);
+
   if(object && query){
     try{
       let result = whynomatch(object, query);
@@ -55,13 +55,15 @@ function update(objectEditor, queryEditor, outputEditor){
   }
 }
 
-function tryParse(editor){
+function tryParse(editor, options = {}){
   let parsedValue;
   try{
     let value = editor.getValue();
+
     if(value !== ""){
-      parsedValue = JSON5.parse(value);
+      parsedValue = JSON5P.parse(value);
     }
+
     clearError(editor);
   } catch(e){
     setError(editor, e.message);
@@ -163,7 +165,7 @@ function getDefaultQuery(){
         }
       }
     },
-    dimention: "C-138"
+    dimension: "C-138"
   }
   
   let defaultQueryString = 
@@ -190,5 +192,5 @@ ${value}`;
 }
 
 function stringify(object){
-  return JSON5.stringify(object, null, 2);
+  return JSON5P.stringify(object);
 }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Why does an object not match a mongo query?",
   "main": "dist/whynomatch.js",
-  "homepage": "https://github.com/alexpusch/whynomatch",
+  "homepage": "http://alexpusch.github.io/whynomatch",
   "repository": {
     "type": "git",
     "url": "https://github.com/alexpusch/whynomatch.git"

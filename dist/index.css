@@ -422,7 +422,7 @@ body {
       font-family: 'Roboto', sans-serif;
       color: #eee; }
     .container .header .title {
-      background-image: url("/dist/assets/logo.png");
+      background-image: url(assets/logo_49973ebde5b828962d1bf3d8b63c4976.png);
       background-repeat: no-repeat;
       background-position: 0px 3px;
       background-size: 37px;
@@ -436,7 +436,7 @@ body {
       color: #EECBAE; }
     .container .header .github {
       float: right;
-      background-image: url("/dist/assets/github.png");
+      background-image: url(assets/github_67a64e3123d6cbc11db8d1235fc61df7.png);
       height: 40px;
       width: 40px;
       background-size: 40px;

@@ -7,7 +7,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "dist"),
-    publicPath: "/dist/",
+    // publicPath: "dist/",
     filename: "index.js",
   },
   module : {
@@ -23,6 +23,9 @@ module.exports = {
       {
         test: /\.sass$/,
         loader: ExtractTextPlugin.extract("style-loader", "css-loader!autoprefixer-loader!sass-loader")
+      },{
+        test: /\.(png|jpg)$/,
+        loader: "file?name=[path][name]_[hash].[ext]"
       }
     ]
   },

@@ -43,18 +43,28 @@ describe('whynomatch', function () {
     expect(result).to.deep.equal(expected);
   });
  
-  describe('nesting', function () {
-    it('find result for a failed nested query', function () {
+  describe('embeded query', function () {
+    it('find result for a non exact match', function () {
       let target = { a: { b: 3, c: 1} }
       let query = { a: { b: 3, c: 4 } }
 
-      let expected = { a: { c: 4 } }
+      let expected = { a: { b: 3, c: 4 } }
 
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
     });
 
-    it('do not find result for a successfull nested query', function () {
+    it('find result for a query that is a sub object of target', function () {
+      let target = { a: { b: 3, c: 1, d: 5} }
+      let query = { a: { b: 3, c: 1 } }
+
+      let expected = { a: { b: 3, c: 1 } }
+
+      let result = whynomatch(target, query);
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('do not find result for an exact match', function () {
       let target = { a: { b: 3, c: 1}};
       let query = { a: { b: 3, c: 1 }};
 
@@ -63,27 +73,9 @@ describe('whynomatch', function () {
       let result = whynomatch(target, query);
       expect(result).to.deep.equal(expected);
     });
+  });
 
-    it('find result for a failed nested query with operators', function () {
-      let target = { a: { b: 3, c: 1}};
-      let query = { a: { b: 3, c: { $gt: 2 }}};
-
-      let expected = { a: { c: { $gt: 2 }}};
-
-      let result = whynomatch(target, query);
-      expect(result).to.deep.equal(expected);
-    });
-
-    it('do not find result for a successfull nested query with operators', function () {
-      let target = { a: { b: 3, c: 1} }
-      let query = { a: { b: 3, c: {$lt: 2} } }
-
-      let expected = {};
-
-      let result = whynomatch(target, query);
-      expect(result).to.deep.equal(expected);
-    });
-
+  describe('nested syntax', function () {   
     it('find result for a failed short syntax nested query', function () {
       let target = { a: { b: 3, c: 1}};
       let query = { "a.c": 4 };
@@ -554,7 +546,7 @@ describe('whynomatch', function () {
 
     it('throws an error when the value given is not an array', function () {
       let target = { a: 1, b: 2 };
-      let query = { $in: 1};
+      let query = { a: {$in: 1}};
 
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
@@ -617,7 +609,7 @@ describe('whynomatch', function () {
 
     it('throws an error when the value given is not an array', function () {
       let target = { a: 1, b: 2 };
-      let query = { $nin: 1};
+      let query = { a: { $nin: 1 }};
 
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
@@ -931,7 +923,7 @@ describe('whynomatch', function () {
 
   describe('$where', function () {
     describe('function is js function', function () {
-      it('find a result if the query function return false for the targer', function () {
+      it('find a result if the query function return false for the target', function () {
         let target = { a: 1, b: 2 };
 
         let whereFn = function(){ return this.a > 2 };
@@ -942,7 +934,7 @@ describe('whynomatch', function () {
         expect(result).to.deep.equal(expected);
       });
 
-      it('do not find a result if the query function return true for the targer', function () {
+      it('do not find a result if the query function return true for the target', function () {
         let target = { a: 1, b: 2 };
 
         let whereFn = function(){ return this.a > 0 };
@@ -954,7 +946,7 @@ describe('whynomatch', function () {
       });
 
       // TODO: fix this
-      xit('do not find a result if the query function uses obj as this and return true for the targer', function () {
+      xit('do not find a result if the query function uses obj as this and return true for the target', function () {
         let target = { a: 1, b: 2 };
 
         let whereFn = function(){ return obj.a > 0 };
@@ -967,7 +959,7 @@ describe('whynomatch', function () {
     });
 
     describe('function is string function', function () {
-      it('find a result if the query function return false for the targer', function () {
+      it('find a result if the query function return false for the target', function () {
         let target = { a: 1, b: 2 };
 
         let whereFn = "this.a > 2";
@@ -978,7 +970,7 @@ describe('whynomatch', function () {
         expect(result).to.deep.equal(expected);
       });
 
-      it('do not find a result if the query function return true for the targer', function () {
+      it('do not find a result if the query function return true for the target', function () {
         let target = { a: 1, b: 2 };
 
         let whereFn = "this.a > 0";
@@ -989,7 +981,7 @@ describe('whynomatch', function () {
         expect(result).to.deep.equal(expected);
       });
 
-      it('do not find a result if the query function uses obj as this and return true for the targer', function () {
+      it('do not find a result if the query function uses obj as this and return true for the target', function () {
         let target = { a: 1, b: 2 };
 
         let whereFn = "obj.a > 0";
@@ -1003,7 +995,7 @@ describe('whynomatch', function () {
 
     it('throws an error when the query is not a string or a fucntion', function () {
       let target = { a: 'hello world', b: 2 };
-      let query = { a: {$where: 7 }};
+      let query = { $where: 7 };
 
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
@@ -1100,8 +1092,15 @@ describe('whynomatch', function () {
     });
 
     it('throws an error when the query is not an object', function () {
-      let target = { a: 1 , b: 2 };
+      let target = { a: [1, 2, 3], b: 2 };
       let query = { a: { $elemMatch: 1}};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws an error when the query contains $where', function () {
+      let target = { a: [1, 2, 3] , b: 2 };
+      let query = { a: { $elemMatch: { $where: "this.a > 2" }}};
 
       expect(function(){ whynomatch(target, query); }).to.throw();
     });
@@ -1150,6 +1149,20 @@ describe('whynomatch', function () {
     it('throws for unsupported operators', function () {
       let target = { a: 1 , b: 2 };
       let query = { a: { $shmop: [1, 3]}};
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws for low level operator at top level query', function () {
+      let target = { a: 1 , b: 2 };
+      let query = { $lt: 3 };
+
+      expect(function(){ whynomatch(target, query); }).to.throw();
+    });
+
+    it('throws for top level operator at low level query', function () {
+      let target = { a: 1 , b: 2 };
+      let query = { a: { $or: { $lt: 10 }}};
 
       expect(function(){ whynomatch(target, query); }).to.throw();
     });

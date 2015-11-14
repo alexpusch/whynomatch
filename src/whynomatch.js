@@ -1,5 +1,6 @@
 import _ from "lodash"
 import MongoParsingError from "./mongo_parsing_error"
+import deepEqual from "deep-equal"
 
 let comparisionOperators = {
   $eq(target, value){
@@ -38,25 +39,11 @@ let comparisionOperators = {
 
     return new RegExp(value).test(target);
   },
-  $where(target, value){
-    let fn;
-
-    if(_.isFunction(value)){
-      fn = value;
-    }
-    else if(_.isString(value)){
-      eval(`fn = function(){var obj = this; return ${value}}`)
-    } else{
-      throw new MongoParsingError('where', 'function or a string', value);
-    }
-    
-    return fn.call(target);
-  },
   $shortEq(target, value, key){
     if(_.isRegExp(value)){
       return value.test(target)
     } else {
-      return value === target;
+      return deepEqual(value, target, {strictOrder: true});
     }
   }
 }
@@ -106,26 +93,43 @@ let arrayOperators = {
   }
 }
 
-let logicalOperators = {
-  $not(target, value, key){
-    let result = whynomatch(target, value);
-    if(_.isEmpty(result))
-      return value;
-    else
+let lowLevelOperators = _.extend(
+  wrapComperisionOperators(comparisionOperators, true),
+  wrapComperisionOperators(arrayOperators),
+
+  {
+    $not(target, value, key){
+      let result = lowLevelWhynomatch(target, value);
+      if(_.isEmpty(result))
+        return value;
+      else
+        return {};
+    }, 
+    $elemMatch(target, value, key){
+      if(!_.isPlainObject(value))
+        throw new MongoParsingError('elemMatch', 'object', value);
+  
+      if(!_.isArray(target))
+        return value;
+  
+      let subQueriesResults = _(target)
+        .map(_.partial(elemMatchLevelWhynomatch, _, value))
+        .reject(_.partial(_.isEqual, {})).value();
+  
+  
+      if(subQueriesResults.length === target.length){
+        return value;
+      }
+          
       return {};
-  },
+  }}
+);
+
+let topLevelOperators = {
   $or(target, value, key){
     let subQueriesResults = multiOperator(target, value, key);
 
     if(subQueriesResults.length === value.length)
-      return value;
-
-    return {};
-  },
-  $nor(target, value, key){
-    let subQueriesResults = multiOperator(target, value, key);
-
-    if(subQueriesResults.length !== value.length)
       return value;
 
     return {};
@@ -138,61 +142,152 @@ let logicalOperators = {
 
     return {};
   },
-  $elemMatch(target, value, key){
-    if(!_.isPlainObject(value))
-      throw new MongoParsingError('elemMatch', 'object', value);
+  $nor(target, value, key){
+    let subQueriesResults = multiOperator(target, value, key);
 
-    if(!_.isArray(target))
+    if(subQueriesResults.length !== value.length)
       return value;
 
-    let subQueriesResults = _(target)
-      .map(_.partial(whynomatch, _, value))
-      .reject(_.partial(_.isEqual, {})).value();
-
-    if(subQueriesResults.length === target.length)
-      return value;
-    
     return {};
+  },
+  $where(target, value){
+    let fn;
+
+    if(_.isFunction(value)){
+      fn = value;
+    }
+    else if(_.isString(value)){
+      eval(`fn = function(){var obj = this; return ${value}}`)
+    } else{
+      throw new MongoParsingError('where', 'function or a string', value);
+    }
+    
+    if(!fn.call(target))
+      return value;
   }
 }
-
-let virtualOperators = {
-  $nested(target, value, key){
-    let parts = key.split('.');
-    let innerObj = _.reduce(parts, function(result, value, key){
-      if(result === undefined)
-        return undefined;
-
-      return result[value];
-    }, target);
-
-    return whynomatch(innerObj, value);
-  }
-}
-
-let operators = _.extend(
-  logicalOperators, 
-  virtualOperators, 
-  wrapComperisionOperators(comparisionOperators, true),
-  wrapComperisionOperators(arrayOperators));
 
 function whynomatch(target, query){
+  return topLevelWhynomatch(target, query);
+}
+
+function topLevelWhynomatch(target, query){
   let noMatch = {};
 
-  if(!_.isPlainObject(query)){
-    return operators.$shortEq(target, query);
+  _.keys(query).forEach(function(key){
+    validateOperator(key, isTopLevelOperator);
+    
+    let value = query[key];
+    let results
+
+    if(isTopLevelOperator(key)){
+      let operator = getTopLevelOperator(key, value);
+      results = operator(target, value, key);
+    } else {
+      let nestedTarget = _.property(key)(target);
+      results = lowLevelWhynomatch(nestedTarget, value);
+    }
+
+    if(!isEmpty(results))
+      noMatch[key] = results;
+  });
+
+  return noMatch;
+}
+
+function lowLevelWhynomatch(target, query){
+  let noMatch = {};
+
+  if(!isMongoExpression(query)){
+    noMatch = lowLevelOperators.$shortEq(target, query)
+    return noMatch;
   }
 
   _.keys(query).forEach(function(key){
+    validateOperator(key, isLowLevelOperator);
+
     let value = query[key];
 
-    let operator = getOperator(key, value);
+    let operator = getLowLevelOperator(key, value);
     let operatorResults = operator(target, value, key);
-
+    
     if(!isEmpty(operatorResults))
       noMatch[key] = operatorResults;
   });
+
   return noMatch;
+}
+
+function elemMatchLevelWhynomatch(target, query){
+  let noMatch = {};
+
+  _.keys(query).forEach(function(key){
+    validateOperator(key, function(key){
+      return key !== "$where" && (isLowLevelOperator(key) || isTopLevelOperator(key));
+    });
+
+    let value = query[key];
+    let results
+
+    if(isTopLevelOperator(key)){
+      let operator = getTopLevelOperator(key, value);
+      results = operator(target, value, key);
+    } else if(isLowLevelOperator(key)) {
+      let operator = getLowLevelOperator(key, value);
+      results = operator(target, value, key);
+    } else {
+      let nestedTarget = _.property(key)(target);
+      results = lowLevelWhynomatch(nestedTarget, value);
+    }
+
+    if(!isEmpty(results))
+      noMatch[key] = results;
+  });
+
+  return noMatch;
+}
+
+function isMongoExpression(query){
+  return !isPrimitive(query) && _(query).keys().all(looksLikeOperator);
+}
+
+function isPrimitive(query){
+  return _.isString(query) ||
+    _.isNumber(query) ||
+    _.isDate(query) ||
+    _.isArray(query) ||
+    _.isBoolean(query) ||
+    _.isRegExp(query);
+}
+
+function getTopLevelOperator(key, value){
+  return topLevelOperators[key];
+} 
+
+function getLowLevelOperator(key, value){
+  return lowLevelOperators[key];
+}
+
+function isTopLevelOperator(operator){
+  return operator in topLevelOperators;
+}
+
+function isLowLevelOperator(operator){
+  return operator in lowLevelOperators;
+}
+
+function validateOperator(key, checkFn){
+  if(looksLikeOperator(key) && !checkFn(key)){
+    throw new Error(`${key} is not a legal operator at this location`)
+  }
+}
+
+function looksLikeOperator(key){
+  return /^\$.+/.test(key);
+}
+
+function isEmpty(value){
+  return value == undefined || _.isEqual(value, {});
 }
 
 function multiOperator(target, subQueries, key){
@@ -200,7 +295,7 @@ function multiOperator(target, subQueries, key){
     throw new MongoParsingError(key, 'Array', subQueries);
 
   let subQueriesResults = _(subQueries)
-    .map(_.partial(whynomatch, target))
+    .map(_.partial(topLevelWhynomatch, target))
     .reject(_.partial(_.isEqual, {})).value();
 
   return subQueriesResults;
@@ -226,25 +321,6 @@ function wrapComperisionOperator(operatorFn, arrayEquality){
 
     return {};
   };
-}
-
-function getOperator(key, value){
-  let operatorName;
-
-  if(/^\$.+/.test(key)){
-    if(key in operators)
-      operatorName = key
-    else
-      throw new Error(`${key} is an unsupported operator`);
-  } else{
-    operatorName = "$nested";  
-  }
-
-  return operators[operatorName];
-}
-
-function isEmpty(value){
-  return value == undefined || _.isEqual(value, {});
 }
 
 export default whynomatch;

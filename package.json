@@ -24,6 +24,7 @@
     "mocha-loader": "^0.7.1"
   },
   "dependencies": {
+    "deep-equal": "alexpusch/node-deep-equal",
     "lodash": "^3.10.1"
   },
   "scripts": {

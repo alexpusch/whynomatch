@@ -1,6 +1,6 @@
 {
   "name": "whynomatch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Why does an object not match a mongo query?",
   "main": "dist/whynomatch.js",
   "homepage": "http://alexpusch.github.io/whynomatch",

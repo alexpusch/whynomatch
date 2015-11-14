@@ -8,7 +8,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     // publicPath: "dist/",
-    filename: "index.js",
+    filename: "index.1.0.2.js",
   },
   module : {
     loaders: [ { 
